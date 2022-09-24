@@ -1,4 +1,7 @@
+/combined.json
 /dist
 /ne_10m_urban_areas.*
 /node_modules
+/package-lock.json
 /timezones.geojson.zip
+/yarn.lock

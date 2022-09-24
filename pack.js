@@ -10,7 +10,7 @@ const EPS = 1e-6; // Epsilon value for floating-point equality checks.
 // could easily be tuned smaller or larger if appropriate.
 const URBAN_HACK_RADIUS = 720/49152;
 
-const tz_geojson = require("./dist/combined.json");
+const tz_geojson = require("./combined.json");
 const urban_geojson = require("./ne_10m_urban_areas.json");
 
 
@@ -313,6 +313,7 @@ function tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, depth) {
       // Resolve them arbitrarily and we'll tweak it if anyone complains.
       if(a === "Europe/Amsterdam" && b === "Europe/Berlin") { return a; }
       if(a === "Australia/Sydney" && b === "Australia/Melbourne") { return a; }
+      if(a === "Asia/Tbilisi" && b === "Europe/Moscow") { return a; }
 
       throw new Error("unresolved zone conflict: " + a + " vs " + b);
     }

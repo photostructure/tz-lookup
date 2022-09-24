@@ -17,8 +17,9 @@ describe("tzlookup", function() {
   }
 
   function pass(testcase) {
-    var args = testcase[0];
-    var expected = testcase[1];
+    const args = testcase[0];
+    const expected = testcase[1];
+    const expectedGeoTz = testcase[2] ?? expected
 
     it(
       "should return \"" + expected + "\" given " + stringify_list(args),
@@ -32,6 +33,18 @@ describe("tzlookup", function() {
         }
       }
     );
+    
+    if (globalThis.window == null) {
+      const { find } = require('geo-tz');
+      it("should match the timezone from geo-tz given " + stringify_list(args), function () {
+        var actual = find(...args.map(Number))[0]
+        if (actual != expectedGeoTz) {
+          throw new Error(
+            "expected \"" + expectedGeoTz + "\" but geo-tz says \"" + actual + "\""
+          );
+        }
+      });
+    }
   }
 
   function fail(args) {
@@ -50,7 +63,7 @@ describe("tzlookup", function() {
     });
   }
 
-  [
+  const TestCases = [
     // These tests are hand-crafted for specific locations.
     [[ 40.7092,  -74.0151], "America/New_York"],
     [[ 42.3668,  -71.0546], "America/New_York"],
@@ -68,7 +81,7 @@ describe("tzlookup", function() {
     [[ 47.5886, -122.3382], "America/Los_Angeles"],
     [[ 58.3168, -134.4397], "America/Juneau"],
     [[ 21.4381, -158.0493], "Pacific/Honolulu"],
-    [[ 42.7000,  -80.0000], "America/Toronto"],
+    [[ 42.7000,  -80.0000], "America/Nipigon"],
     [[ 51.0036, -114.0161], "America/Edmonton"],
     [[-16.4965,  -68.1702], "America/La_Paz"],
     [[-31.9369,  115.8453], "Australia/Perth"],
@@ -136,7 +149,7 @@ describe("tzlookup", function() {
     [[ 68.0168,   23.4515], "Europe/Stockholm"], // #56 (Ruosteranta)
     [[ 68.1133,   23.3214], "Europe/Stockholm"], // #56 (Kätkesuando)
     [[ 40.7084, -86.69554], "America/Indiana/Indianapolis"], // #59
-    [[ 41.0523, -86.70629], "America/Indiana/Indianapolis"], // #59
+    [[ 41.0523, -86.70629], "America/Indiana/Winamac"], // #59
 
     // Check that we resolve conflicting zones adequately.
     [[ 43.8250,   87.6000], "Asia/Urumqi"],
@@ -144,11 +157,11 @@ describe("tzlookup", function() {
 
     // Collapse the north pole so that it always returns GMT regardless of the
     // longitude.
-    [[90, -180], "Etc/GMT"], // #20
-    [[90,  -90], "Etc/GMT"], // #20
-    [[90,    0], "Etc/GMT"], // #20
-    [[90,   90], "Etc/GMT"], // #20
-    [[90,  180], "Etc/GMT"], // #20
+    [[90, -180], "Etc/GMT", "Etc/GMT-12"], // #20 // TODO FIXME: geo-tz says Etc/GMT+12
+    [[90,  -90], "Etc/GMT", "Etc/GMT-12"], // #20
+    [[90,    0], "Etc/GMT", "Etc/GMT-12"], // #20
+    [[90,   90], "Etc/GMT", "Etc/GMT-12"], // #20
+    [[90,  180], "Etc/GMT", "Etc/GMT-12"], // #20
 
     // Sanity-check international waters.
     [[-56.25, -180], "Etc/GMT+12"],
@@ -175,7 +188,7 @@ describe("tzlookup", function() {
     [[-56.25,  135], "Etc/GMT-9"],
     [[-56.25,  150], "Etc/GMT-10"],
     [[-48.75,  165], "Etc/GMT-11"],
-    [[-56.25,  180], "Etc/GMT-12"],
+    [[-56.25,  180], "Etc/GMT-12", "Etc/GMT+12"],
 
     // Strings should be allowed.
     [["42.3668",  "-71.0546"], "America/New_York"],
@@ -185,14 +198,14 @@ describe("tzlookup", function() {
     // confident when I change the data storage format all around.
     [[ 37.8358,  -89.0556], "America/Chicago"],
     [[-29.3372,  -56.9745], "America/Argentina/Cordoba"],
-    [[ 82.3141,  -39.1331], "America/Godthab"],
+    [[ 82.3141,  -39.1331], "America/Nuuk"],
     [[ 54.1241,   95.1606], "Asia/Krasnoyarsk"],
     [[ -3.6445,   24.5964], "Africa/Lubumbashi"],
     [[ 21.9200,   76.3888], "Asia/Kolkata"],
     [[ 81.0433,  -78.2488], "America/Iqaluit"],
     [[ 41.4793,   -2.7493], "Europe/Madrid"],
     [[ 16.5041,  103.0204], "Asia/Bangkok"],
-    [[ 72.4750, -122.6775], "America/Yellowknife"],
+    [[ 72.4750, -122.6775], "America/Inuvik"],
     [[ 20.2716,   28.7996], "Africa/Khartoum"],
     [[-18.6123,  137.4460], "Australia/Darwin"],
     [[ 57.0724,  104.8747], "Asia/Irkutsk"],
@@ -200,7 +213,7 @@ describe("tzlookup", function() {
     [[ 67.9909,  164.1215], "Asia/Anadyr"],
     [[ 30.7623,  -84.0980], "America/New_York"],
     [[  1.9845,  100.4508], "Asia/Jakarta"],
-    [[ 69.3563,  -39.2451], "America/Godthab"],
+    [[ 69.3563,  -39.2451], "America/Nuuk"],
     [[ 16.1784,  106.2894], "Asia/Vientiane"],
     [[ 22.1635,  -84.3358], "America/Havana"],
     [[ 65.9140,  -70.5960], "America/Iqaluit"],
@@ -209,7 +222,7 @@ describe("tzlookup", function() {
     [[ 65.9913,   43.2401], "Europe/Moscow"],
     [[-31.3366,  -57.4872], "America/Montevideo"],
     [[ 67.7696,  158.2245], "Asia/Srednekolymsk"],
-    [[ 65.8424,  -52.6658], "America/Godthab"],
+    [[ 65.8424,  -52.6658], "America/Nuuk"],
     [[ 38.8582,  -78.9750], "America/New_York"],
     [[-27.8742,  146.6473], "Australia/Brisbane"],
     [[ 45.9379,   62.7043], "Asia/Qyzylorda"],
@@ -217,11 +230,11 @@ describe("tzlookup", function() {
     [[ 29.9944,  -99.8165], "America/Chicago"],
     [[ 29.1503,   23.8957], "Africa/Tripoli"],
     [[ 54.5334,   92.8278], "Asia/Krasnoyarsk"],
-    [[ 64.9790,  -41.9666], "America/Godthab"],
+    [[ 64.9790,  -41.9666], "America/Nuuk"],
     [[-17.2287,   33.9961], "Africa/Maputo"],
     [[ 68.3552, -149.0941], "America/Anchorage"],
     [[ 40.8713,   86.7712], "Asia/Urumqi"],
-    [[ 58.9104, -108.2242], "America/Regina"],
+    [[ 58.9104, -108.2242], "America/Swift_Current"],
     [[ 63.9166,   56.0705], "Europe/Moscow"],
     [[ 54.7639,   41.9429], "Europe/Moscow"],
     [[ 81.8413,  -73.2339], "America/Iqaluit"],
@@ -229,7 +242,7 @@ describe("tzlookup", function() {
     [[  9.5718,  -83.1948], "America/Costa_Rica"],
     [[ 11.9618,  -71.7086], "America/Bogota"],
     [[ 65.5352,   74.4143], "Asia/Yekaterinburg"],
-    [[ 50.5575,  -93.9996], "America/Winnipeg"],
+    [[ 50.5575,  -93.9996], "America/Rainy_River"],
     [[ 51.6740,  157.0986], "Asia/Kamchatka"],
     [[ 46.7376,  142.8907], "Asia/Sakhalin"],
     [[ 37.5756,  120.5804], "Asia/Shanghai"],
@@ -246,7 +259,7 @@ describe("tzlookup", function() {
     [[ -9.6665,  -43.4782], "America/Bahia"],
     [[ 17.5016,   -8.0710], "Africa/Nouakchott"],
     [[ 64.1965, -116.9276], "America/Yellowknife"],
-    [[ 74.0116,  -35.9084], "America/Godthab"],
+    [[ 74.0116,  -35.9084], "America/Nuuk"],
     [[ 28.1819,   47.1326], "Asia/Riyadh"],
     [[-25.8522,  139.7641], "Australia/Brisbane"],
     [[ 55.1606,   80.3125], "Asia/Novosibirsk"],
@@ -264,10 +277,10 @@ describe("tzlookup", function() {
     [[ 73.9279,   56.0125], "Europe/Moscow"],
     [[ 61.0509,   79.4277], "Asia/Yekaterinburg"],
     [[ -5.8263,  -38.5891], "America/Fortaleza"],
-    [[ 66.1051,  -44.2991], "America/Godthab"],
-    [[ 61.9720, -122.8406], "America/Yellowknife"],
+    [[ 66.1051,  -44.2991], "America/Nuuk"],
+    [[ 61.9720, -122.8406], "America/Inuvik"],
     [[ 50.7092,   98.1654], "Asia/Ulaanbaatar"],
-    [[ 42.7892,  -80.2958], "America/Toronto"],
+    [[ 42.7892,  -80.2958], "America/Nipigon"],
     [[ 20.1117,   53.8416], "Asia/Riyadh"],
     [[ 66.7761,  148.5291], "Asia/Srednekolymsk"],
     [[ -5.3391,   16.3601], "Africa/Kinshasa"],
@@ -284,7 +297,7 @@ describe("tzlookup", function() {
     [[ 69.0819,   49.1753], "Europe/Moscow"],
     [[ 29.1968,   58.7977], "Asia/Tehran"],
     [[ 26.3241,  -11.1860], "Africa/El_Aaiun"],
-    [[ 74.5094,  -46.1125], "America/Godthab"],
+    [[ 74.5094,  -46.1125], "America/Nuuk"],
     [[-18.0039,  137.1668], "Australia/Darwin"],
     [[  3.1497,  -63.0510], "America/Boa_Vista"],
     [[ 48.6762,   79.7838], "Asia/Almaty"],
@@ -294,7 +307,7 @@ describe("tzlookup", function() {
     [[ 45.3159,   74.4388], "Asia/Almaty"],
     [[ 22.9471,   71.5664], "Asia/Kolkata"],
     [[ 39.4891,   29.9276], "Europe/Istanbul"],
-    [[ 69.5459,  -40.9566], "America/Godthab"],
+    [[ 69.5459,  -40.9566], "America/Nuuk"],
     [[-25.1121,  -56.3599], "America/Asuncion"],
     [[ 58.6718,   71.7465], "Asia/Yekaterinburg"],
     [[ 38.7813, -105.5734], "America/Denver"],
@@ -308,13 +321,13 @@ describe("tzlookup", function() {
     [[ -6.1405,   27.0324], "Africa/Lubumbashi"],
     [[ 28.0069,   27.9217], "Africa/Cairo"],
     [[ 17.5589,   82.9606], "Asia/Kolkata"],
-    [[ 77.0070,  -58.1725], "America/Godthab"],
+    [[ 77.0070,  -58.1725], "America/Nuuk"],
     [[ 25.1439,   50.4092], "Asia/Riyadh"],
     [[ 13.5243,   26.5038], "Africa/Khartoum"],
     [[-19.5728,  134.1770], "Australia/Darwin"],
     [[ 37.7332, -116.5272], "America/Los_Angeles"],
     [[-30.6651,  120.3113], "Australia/Perth"],
-    [[ 74.6277,  -33.1710], "America/Godthab"],
+    [[ 74.6277,  -33.1710], "America/Nuuk"],
     [[ 53.6035,  -97.5722], "America/Winnipeg"],
     [[ 55.5158,   58.6481], "Asia/Yekaterinburg"],
     [[-10.3277,   38.6084], "Africa/Dar_es_Salaam"],
@@ -336,7 +349,7 @@ describe("tzlookup", function() {
     [[ 62.7709, -118.4994], "America/Yellowknife"],
     [[ 21.2630,   17.5662], "Africa/Ndjamena"],
     [[ 63.7417, -115.2235], "America/Yellowknife"],
-    [[ 81.6018,  -59.8101], "America/Godthab"],
+    [[ 81.6018,  -59.8101], "America/Nuuk"],
     [[-38.1635,  -57.7626], "America/Argentina/Buenos_Aires"],
     [[ 36.1970, -107.8392], "America/Denver"],
     [[ 26.0985, -105.9614], "America/Monterrey"],
@@ -349,8 +362,8 @@ describe("tzlookup", function() {
     [[ 23.4670,   42.9883], "Asia/Riyadh"],
     [[ 64.0877,   20.1457], "Europe/Stockholm"],
     [[ 73.5927, -115.9105], "America/Yellowknife"],
-    [[ 51.8279,  -84.3882], "America/Toronto"],
-    [[ 56.5034, -108.7968], "America/Regina"],
+    [[ 51.8279,  -84.3882], "America/Nipigon"],
+    [[ 56.5034, -108.7968], "America/Swift_Current"],
     [[ 55.2477,   64.4429], "Asia/Yekaterinburg"],
     [[ 79.9054,  -80.5558], "America/Iqaluit"],
     [[ 68.1178,  137.7878], "Asia/Vladivostok"],
@@ -364,15 +377,15 @@ describe("tzlookup", function() {
     [[ 56.5933,   91.5732], "Asia/Krasnoyarsk"],
     [[ 63.4242,  153.9570], "Asia/Magadan"],
     [[ 60.5414,  102.2830], "Asia/Krasnoyarsk"],
-    [[ 78.2319,  -35.9009], "America/Godthab"],
+    [[ 78.2319,  -35.9009], "America/Nuuk"],
     [[ 50.4043,   20.1115], "Europe/Warsaw"],
-    [[ 67.7007, -139.1173], "America/Whitehorse"],
+    [[ 67.7007, -139.1173], "America/Dawson"],
     [[ 46.7656,   96.6875], "Asia/Hovd"],
     [[-22.5825,   29.4276], "Africa/Johannesburg"],
     [[ 59.9827,   92.8622], "Asia/Krasnoyarsk"],
     [[ 32.2351,   74.7128], "Asia/Karachi"],
     [[ 81.5336,  -86.4839], "America/Rankin_Inlet"],
-    [[ 77.1564,  -25.3151], "America/Godthab"],
+    [[ 77.1564,  -25.3151], "America/Nuuk"],
     [[ 40.7495,   34.3622], "Europe/Istanbul"],
     [[-12.6167,  -54.5727], "America/Cuiaba"],
     [[ 26.5547, -100.3505], "America/Monterrey"],
@@ -383,12 +396,12 @@ describe("tzlookup", function() {
     [[ 54.1347, -123.4773], "America/Vancouver"],
     [[ 37.1042,   -8.4274], "Europe/Lisbon"],
     [[ 79.8894,   17.3457], "Arctic/Longyearbyen"],
-    [[ 63.2507,  -46.7969], "America/Godthab"],
+    [[ 63.2507,  -46.7969], "America/Nuuk"],
     [[ -1.9246,   29.0612], "Africa/Lubumbashi"],
     [[-12.3557,  -53.4448], "America/Cuiaba"],
     [[-27.3542,  -49.1180], "America/Sao_Paulo"],
     [[ 62.9927,   24.7490], "Europe/Helsinki"],
-    [[ 76.0195,  -49.4057], "America/Godthab"],
+    [[ 76.0195,  -49.4057], "America/Nuuk"],
     [[ 14.1445,    3.7444], "Africa/Niamey"],
     [[ 14.4858,   19.3595], "Africa/Ndjamena"],
     [[  8.5186,   11.5768], "Africa/Lagos"],
@@ -405,24 +418,24 @@ describe("tzlookup", function() {
     [[ 61.4208,  165.6336], "Asia/Kamchatka"],
     [[ 31.5990,  110.1621], "Asia/Shanghai"],
     [[-25.9807,   26.9300], "Africa/Johannesburg"],
-    [[ 61.7306,  -48.6246], "America/Godthab"],
+    [[ 61.7306,  -48.6246], "America/Nuuk"],
     [[ 64.2152,  124.0541], "Asia/Yakutsk"],
     [[-46.1385,  -72.9657], "America/Santiago"],
     [[ 15.8589,   24.5199], "Africa/Khartoum"],
     [[ 56.0054,   60.8903], "Asia/Yekaterinburg"],
     [[ 61.4232, -131.4265], "America/Whitehorse"],
-    [[ 60.1848, -122.0054], "America/Yellowknife"],
+    [[ 60.1848, -122.0054], "America/Inuvik"],
     [[ 51.5442, -105.1728], "America/Regina"],
     [[ 43.8244,  -96.6180], "America/Chicago"],
     [[ 62.6568,   77.4446], "Asia/Yekaterinburg"],
-    [[ 72.0346,  -32.6102], "America/Godthab"],
+    [[ 72.0346,  -32.6102], "America/Nuuk"],
     [[ 14.0688,  -13.6619], "Africa/Dakar"],
-    [[ 79.5181,  -25.8663], "America/Godthab"],
+    [[ 79.5181,  -25.8663], "America/Nuuk"],
     [[ 59.8240,   37.2919], "Europe/Moscow"],
     [[  9.1754,  -76.0658], "America/Bogota"],
     [[ -3.3148,   38.7519], "Africa/Nairobi"],
     [[-30.8390,  -61.0529], "America/Argentina/Cordoba"],
-    [[ 77.3716,  -56.5280], "America/Godthab"],
+    [[ 77.3716,  -56.5280], "America/Nuuk"],
     [[ 25.4612,   16.3495], "Africa/Tripoli"],
     [[ 49.2977, -125.2356], "America/Vancouver"],
     [[ 18.4695,   27.3104], "Africa/Khartoum"],
@@ -442,7 +455,7 @@ describe("tzlookup", function() {
     [[ 47.1250,   86.2943], "Asia/Urumqi"],
     [[-30.7504,  -65.1035], "America/Argentina/Cordoba"],
     [[ 73.0064,   98.4606], "Asia/Krasnoyarsk"],
-    [[ 72.9200,  -53.8420], "America/Godthab"],
+    [[ 72.9200,  -53.8420], "America/Nuuk"],
     [[ 33.9540,  -84.6719], "America/New_York"],
     [[ 70.2102,  109.2729], "Asia/Krasnoyarsk"],
     [[ 14.5076,   76.2365], "Asia/Kolkata"],
@@ -512,21 +525,21 @@ describe("tzlookup", function() {
     [[ -0.6722,  -77.7137], "America/Guayaquil"],
     [[ 45.3270, -111.0269], "America/Denver"],
     [[-21.4916,   18.2277], "Africa/Windhoek"],
-    [[ 69.8075,  -36.7877], "America/Godthab"],
+    [[ 69.8075,  -36.7877], "America/Nuuk"],
     [[ 62.4056,   40.1308], "Europe/Moscow"],
     [[ 35.6780,  -85.8903], "America/Chicago"],
     [[ -5.2175,  -55.5735], "America/Santarem"],
     [[ 19.3533,   73.4849], "Asia/Kolkata"],
-    [[ 69.7972,  -50.0355], "America/Godthab"],
+    [[ 69.7972,  -50.0355], "America/Nuuk"],
     [[ 14.7315,   20.6226], "Africa/Ndjamena"],
     [[-11.9026,   19.1156], "Africa/Luanda"],
     [[-19.0649,  -52.4491], "America/Campo_Grande"],
     [[ 61.3513, -148.3128], "America/Anchorage"],
-    [[ 73.8546, -120.2774], "America/Yellowknife"],
+    [[ 73.8546, -120.2774], "America/Inuvik"],
     [[ 69.4978,  156.2309], "Asia/Srednekolymsk"],
     [[ 23.2705,   87.0558], "Asia/Kolkata"],
     [[ 15.9273,  -92.0672], "America/Mexico_City"],
-    [[ 67.4221,  -51.8146], "America/Godthab"],
+    [[ 67.4221,  -51.8146], "America/Nuuk"],
     [[-20.2422,  -40.7203], "America/Sao_Paulo"],
     [[ 14.8675,   76.3773], "Asia/Kolkata"],
     [[-26.1632,   16.0042], "Africa/Windhoek"],
@@ -537,14 +550,14 @@ describe("tzlookup", function() {
     [[  1.5147,  116.9022], "Asia/Makassar"],
     [[ 21.2209,   54.6444], "Asia/Riyadh"],
     [[-18.5604,   13.7071], "Africa/Windhoek"],
-    [[ 73.3086,  -50.3401], "America/Godthab"],
+    [[ 73.3086,  -50.3401], "America/Nuuk"],
     [[ 66.0904,  141.2401], "Asia/Srednekolymsk"],
     [[ 57.5957,   83.7790], "Asia/Tomsk"],
     [[ 62.4294, -160.5397], "America/Anchorage"],
     [[  5.2829,   35.5583], "Africa/Juba"],
     [[ 49.7176, -120.6521], "America/Vancouver"],
     [[ 25.6025,  -99.0005], "America/Monterrey"],
-    [[ 67.5031,  -38.0278], "America/Godthab"],
+    [[ 67.5031,  -38.0278], "America/Nuuk"],
     [[ 43.4929,   78.0778], "Asia/Almaty"],
     [[ 58.7754, -120.0701], "America/Fort_Nelson"],
     [[ 60.8634, -131.1674], "America/Whitehorse"],
@@ -574,7 +587,7 @@ describe("tzlookup", function() {
     [[ 69.5304,   85.2865], "Asia/Krasnoyarsk"],
     [[ 36.6934,  113.5059], "Asia/Shanghai"],
     [[ 17.4480,   49.6467], "Asia/Aden"],
-    [[ 71.4531,  -46.1878], "America/Godthab"],
+    [[ 71.4531,  -46.1878], "America/Nuuk"],
     [[ 14.5328,   20.0108], "Africa/Ndjamena"],
     [[ 49.0779,  105.2610], "Asia/Ulaanbaatar"],
     [[-10.7260,  -66.9046], "America/La_Paz"],
@@ -586,7 +599,7 @@ describe("tzlookup", function() {
     [[  8.1392,   80.1801], "Asia/Colombo"],
     [[ 53.9195,  107.1539], "Asia/Irkutsk"],
     [[ 29.5765,   28.8024], "Africa/Cairo"],
-    [[ 75.7569,  -40.2910], "America/Godthab"],
+    [[ 75.7569,  -40.2910], "America/Nuuk"],
     [[ 54.6688, -115.0705], "America/Edmonton"],
     [[ -8.8954,  -38.3336], "America/Recife"],
     [[ 67.2404,   94.0746], "Asia/Krasnoyarsk"],
@@ -605,7 +618,7 @@ describe("tzlookup", function() {
     [[ 49.3192,   80.5804], "Asia/Almaty"],
     [[-79.0132,   81.3960], "Antarctica/Davis"],
     [[-73.0967,  106.9870], "Antarctica/Vostok"],
-    [[ 77.0111, -120.2982], "America/Yellowknife"],
+    [[ 77.0111, -120.2982], "America/Inuvik"],
     [[-73.4287,    5.4364], "Antarctica/Troll"],
     [[-66.5058,   64.0729], "Antarctica/Mawson"],
     [[ 39.0869, -107.1701], "America/Denver"],
@@ -636,16 +649,16 @@ describe("tzlookup", function() {
     [[-83.4419,    6.9384], "Antarctica/Troll"],
     [[  3.0615,   98.6205], "Asia/Jakarta"],
     [[-70.9510,   48.4250], "Antarctica/Syowa"],
-    [[ 70.3516,  -45.0516], "America/Godthab"],
+    [[ 70.3516,  -45.0516], "America/Nuuk"],
     [[-10.6192, -138.6741], "Pacific/Marquesas"],
     [[ 75.4933,  106.0345], "Asia/Krasnoyarsk"],
     [[-44.4512,  171.2363], "Pacific/Auckland"],
     [[ 67.2609,   78.9830], "Asia/Yekaterinburg"],
     [[-78.0195,  131.0572], "Australia/Perth"],
     [[ 68.4963,  114.0498], "Asia/Yakutsk"],
-    [[ 67.4410,  -34.9892], "America/Godthab"],
+    [[ 67.4410,  -34.9892], "America/Nuuk"],
     [[ 73.0302,  -99.5839], "America/Cambridge_Bay"],
-    [[ 70.5563, -120.2147], "America/Yellowknife"],
+    [[ 70.5563, -120.2147], "America/Inuvik"],
     [[ 65.5479, -144.2437], "America/Anchorage"],
     [[-85.8659,   45.0898], "Antarctica/Syowa"],
     [[ 74.7574,  -80.1124], "America/Iqaluit"],
@@ -659,14 +672,14 @@ describe("tzlookup", function() {
     [[ 23.8292,   70.2438], "Asia/Kolkata"],
     [[ 29.5603,   89.4990], "Asia/Shanghai"],
     [[-84.1417,   47.7183], "Antarctica/Syowa"],
-    [[ 67.9214, -131.6255], "America/Yellowknife"],
+    [[ 67.9214, -131.6255], "America/Inuvik"],
     [[ 48.8324,  128.5311], "Asia/Shanghai"],
     [[ 25.7790,   74.2823], "Asia/Kolkata"],
     [[-86.0345, -170.6664], "Antarctica/McMurdo"],
     [[ 45.6175,  121.6184], "Asia/Shanghai"],
     [[ 41.7403,   20.8276], "Europe/Skopje"],
     [[ 14.8663,   50.1712], "Asia/Aden"],
-    [[ 82.9035,  -22.3043], "America/Godthab"],
+    [[ 82.9035,  -22.3043], "America/Nuuk"],
     [[-16.8805,   19.0830], "Africa/Luanda"],
     [[ 53.0830,   19.8285], "Europe/Warsaw"],
     [[ 64.4828,  163.0586], "Asia/Magadan"],
@@ -716,7 +729,7 @@ describe("tzlookup", function() {
     [[  5.9748,   27.4505], "Africa/Juba"],
     [[ 38.7168, -109.4890], "America/Denver"],
     [[-76.5392,   13.2635], "Antarctica/Troll"],
-    [[ 80.7590,  -38.0482], "America/Godthab"],
+    [[ 80.7590,  -38.0482], "America/Nuuk"],
     [[ 61.2420,  127.0076], "Asia/Yakutsk"],
     [[-71.3681,   71.7439], "Antarctica/Mawson"],
     [[ 24.3740,   13.4214], "Africa/Tripoli"],
@@ -761,12 +774,12 @@ describe("tzlookup", function() {
     [[ 65.3548,  -96.8504], "America/Rankin_Inlet"],
     [[ 62.3472,  171.5791], "Asia/Anadyr"],
     [[-15.9366,  -65.5134], "America/La_Paz"],
-    [[ 79.7116,  -58.1407], "America/Godthab"],
+    [[ 79.7116,  -58.1407], "America/Nuuk"],
     [[  2.5708,  -58.8395], "America/Guyana"],
     [[ 58.2360,  -96.7573], "America/Winnipeg"],
     [[-24.5029,  137.2922], "Australia/Darwin"],
     [[-87.4701, -169.5420], "Antarctica/McMurdo"],
-    [[ 65.5191,  -48.4890], "America/Godthab"],
+    [[ 65.5191,  -48.4890], "America/Nuuk"],
     [[ 47.0597,  100.9226], "Asia/Ulaanbaatar"],
     [[-13.8934,   23.9267], "Africa/Lusaka"],
     [[ 75.0357,  -83.7869], "America/Iqaluit"],
@@ -779,7 +792,7 @@ describe("tzlookup", function() {
     [[ 51.5458,  -95.6936], "America/Winnipeg"],
     [[-80.7504,  149.7052], "Australia/Perth"],
     [[ 80.0749,   23.5076], "Arctic/Longyearbyen"],
-    [[ 72.9919,  -48.7216], "America/Godthab"],
+    [[ 72.9919,  -48.7216], "America/Nuuk"],
     [[ 66.1858, -179.6058], "Asia/Anadyr"],
     [[ 49.0014,   15.9378], "Europe/Prague"],
     [[ 26.2018, -104.4062], "America/Monterrey"],
@@ -794,7 +807,7 @@ describe("tzlookup", function() {
     [[ 38.8564,   69.4276], "Asia/Dushanbe"],
     [[-86.7337,  -91.8492], "Antarctica/McMurdo"],
     [[-67.1256,   80.3719], "Antarctica/Davis"],
-    [[ 73.2005,  -38.8907], "America/Godthab"],
+    [[ 73.2005,  -38.8907], "America/Nuuk"],
     [[ 68.3732,   79.3051], "Asia/Yekaterinburg"],
     [[-18.5228,  179.8736], "Pacific/Fiji"],
     [[ 57.7599,   95.4718], "Asia/Krasnoyarsk"],
@@ -808,10 +821,11 @@ describe("tzlookup", function() {
     [[ 35.9614,  -91.1373], "America/Chicago"],
     [[ 30.5783,  102.8370], "Asia/Shanghai"],
     [[ 67.0065, -102.5618], "America/Cambridge_Bay"],
-    [[ 64.0164, -121.9673], "America/Yellowknife"],
+    [[ 64.0164, -121.9673], "America/Inuvik"],
     [[  6.7059,  118.1856], "Asia/Manila"],
     [[-87.7733,  -48.0000], "Antarctica/McMurdo"],
-    [[ 37.6582,   25.3762], "Europe/Athens"],
+    [[ 37.6582,   25.3762], "Europe/Athens", "Etc/GMT-2"],
+    [[ 37.9909,   23.7208], "Europe/Athens"],
     [[ 22.2387,  -79.7326], "America/Havana"],
     [[-81.8743,  167.1020], "Antarctica/McMurdo"],
     [[-28.2237,  117.1222], "Australia/Perth"],
@@ -829,7 +843,7 @@ describe("tzlookup", function() {
     [[ 81.3302,   60.4397], "Europe/Moscow"],
     [[ 44.9839,   71.9443], "Asia/Almaty"],
     [[-70.6835,    9.4712], "Antarctica/Troll"],
-    [[ 77.4281,  -22.5341], "America/Godthab"],
+    [[ 77.4281,  -22.5341], "America/Nuuk"],
     [[-21.5885,  -48.6123], "America/Sao_Paulo"],
     [[ -5.6724,  106.1960], "Asia/Jakarta"],
     [[ -8.7672,  -68.7273], "America/Eirunepe"],
@@ -870,7 +884,7 @@ describe("tzlookup", function() {
     [[ 67.4182,  147.8312], "Asia/Srednekolymsk"],
     [[-35.6855,  -72.6910], "America/Santiago"],
     [[ 74.5584,   55.9747], "Europe/Moscow"],
-    [[ 76.1433,  -53.2798], "America/Godthab"],
+    [[ 76.1433,  -53.2798], "America/Nuuk"],
     [[  0.7285,  126.0147], "Asia/Jayapura"],
     [[-88.8327,   95.8183], "Antarctica/McMurdo"],
     [[-28.4432,  127.0919], "Australia/Perth"],
@@ -896,7 +910,7 @@ describe("tzlookup", function() {
     [[ 58.6908,  102.4371], "Asia/Krasnoyarsk"],
     [[-88.2361,   97.1364], "Antarctica/McMurdo"],
     [[ 71.6737,   93.9535], "Asia/Krasnoyarsk"],
-    [[ 80.8353,  -25.5244], "America/Godthab"],
+    [[ 80.8353,  -25.5244], "America/Nuuk"],
     [[ 52.9659,   -9.6327], "Europe/Dublin"],
     [[ 18.3417,   77.4311], "Asia/Kolkata"],
     [[ 79.9150,   95.4712], "Asia/Krasnoyarsk"],
@@ -928,7 +942,7 @@ describe("tzlookup", function() {
     [[ 75.0493,  106.5847], "Asia/Krasnoyarsk"],
     [[ 28.9869,   98.6685], "Asia/Shanghai"],
     [[-88.5085,  119.8214], "Antarctica/McMurdo"],
-    [[ 81.6780,  -16.1147], "America/Godthab"],
+    [[ 81.6780,  -16.1147], "America/Nuuk"],
     [[-66.6213,  128.0286], "Antarctica/DumontDUrville"],
     [[ 30.9835,   71.3536], "Asia/Karachi"],
     [[ 49.8747,   63.9115], "Asia/Qostanay"],
@@ -1005,7 +1019,7 @@ describe("tzlookup", function() {
     [[ 44.5273,  102.7418], "Asia/Ulaanbaatar"],
     [[-20.7782,  128.2613], "Australia/Perth"],
     [[ 25.3184,  106.5474], "Asia/Shanghai"],
-    [[ 78.8698,  -32.8473], "America/Godthab"],
+    [[ 78.8698,  -32.8473], "America/Nuuk"],
     [[-33.0014,  -64.8719], "America/Argentina/Cordoba"],
     [[-16.5386,  -74.3819], "America/Lima"],
     [[ 19.3416,   40.9026], "Asia/Riyadh"],
@@ -1045,7 +1059,7 @@ describe("tzlookup", function() {
     [[ 54.7497,   50.0961], "Europe/Moscow"],
     [[-24.3478,   25.9956], "Africa/Gaborone"],
     [[ -6.4392,  -58.3840], "America/Manaus"],
-    [[ 81.9952,  -60.5954], "America/Godthab"],
+    [[ 81.9952,  -60.5954], "America/Nuuk"],
     [[ 68.3685,   23.2111], "Europe/Helsinki"],
     [[-24.6704,   30.5744], "Africa/Johannesburg"],
     [[-85.4897, -155.3197], "Antarctica/McMurdo"],
@@ -1066,17 +1080,17 @@ describe("tzlookup", function() {
     [[-87.5072, -161.3385], "Antarctica/McMurdo"],
     [[ 66.0441,  -96.9490], "America/Rankin_Inlet"],
     [[ 56.4369,   90.9330], "Asia/Krasnoyarsk"],
-    [[ 67.4068, -123.1871], "America/Yellowknife"],
+    [[ 67.4068, -123.1871], "America/Inuvik"],
     [[ 22.3989,  101.9252], "Asia/Vientiane"],
     [[-87.5659,   14.7744], "Antarctica/McMurdo"],
-    [[ 55.6859,  -86.2914], "America/Toronto"],
+    [[ 55.6859,  -86.2914], "America/Nipigon"],
     [[-89.5274, -161.9818], "Antarctica/McMurdo"],
     [[ 14.0525,   -0.5529], "Africa/Ouagadougou"],
     [[-19.9091,   30.9270], "Africa/Harare"],
-    [[ 54.7107,  -87.6633], "America/Toronto"],
+    [[ 54.7107,  -87.6633], "America/Nipigon"],
     [[ -6.4873,  -45.3957], "America/Fortaleza"],
     [[-19.9700,  -47.6740], "America/Sao_Paulo"],
-    [[ 70.6514,  -51.6690], "America/Godthab"],
+    [[ 70.6514,  -51.6690], "America/Nuuk"],
     [[ 47.9776,   62.9287], "Asia/Aqtobe"],
     [[ 51.1392,   14.5513], "Europe/Berlin"],
     [[-88.9514,   21.0688], "Antarctica/McMurdo"],
@@ -1097,9 +1111,11 @@ describe("tzlookup", function() {
     [[ 46.6776,   26.3822], "Europe/Bucharest"],
     [[ 80.7574,  -79.2951], "America/Iqaluit"],
     [[ 67.5891, -116.0222], "America/Cambridge_Bay"],
-    [[ 81.6416,  -30.4912], "America/Godthab"],
+    [[ 81.6416,  -30.4912], "America/Nuuk"],
     [[-37.5253,  -65.2140], "America/Argentina/Salta"],
-  ].forEach(pass);
+  ]
+  
+  TestCases.forEach(pass);
 
   // Sanity-check that bad inputs fail.
   [

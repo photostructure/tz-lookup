@@ -1,12 +1,13 @@
 {
   "author": {
-    "email": "developer@darksky.net",
-    "name": "The Dark Sky Company"
+    "email": "tzlookup@photostructure.com",
+    "name": "PhotoStructure, Inc."
   },
   "description": "fast time zone lookup",
   "devDependencies": {
-    "mocha": "*",
-    "uglify-js": "*"
+    "geo-tz": "^7.0.2",
+    "mocha": "^10.0.0",
+    "uglify-js": "^3.17.1"
   },
   "keywords": [
     "tz",
@@ -15,11 +16,12 @@
   ],
   "license": "CC0-1.0",
   "main": "tz.js",
-  "name": "tz-lookup",
+  "name": "@photostructure/tz-lookup",
   "repository": {
     "type": "git",
-    "url": "git://github.com/darkskyapp/tz-lookup.git"
+    "url": "git://github.com:photostructure/tz-lookup.git"
   },
+  "types": "index.d.ts",
   "scripts": {
     "test": "mocha"
   },

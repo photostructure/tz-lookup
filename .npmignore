@@ -1,0 +1,10 @@
+# No hidden files:
+.*
+
+# Don't include tests:
+test.*
+
+# This is only used by rebuild.sh
+pack.js
+rebuild.sh
+tz_template.js
