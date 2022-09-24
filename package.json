@@ -33,5 +33,5 @@
   "scripts": {
     "test": "mocha"
   },
-  "version": "7.0.0-pre"
+  "version": "7.0.0"
 }
