@@ -8,3 +8,9 @@ test.*
 pack.js
 rebuild.sh
 tz_template.js
+combined.json
+ne_10m_urban_areas.*
+node_modules
+package-lock.json
+timezones.geojson.zip
+yarn.lock
