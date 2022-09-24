@@ -1,5 +1,10 @@
 # @photostructure/tz-lookup
 
+[![npm version](https://img.shields.io/npm/v/@photostructure/tz-lookup.svg)](https://www.npmjs.com/package/@photostructure/tz-lookup)
+[![Build status](https://github.com/photostructure/tz-lookup/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/photostructure/tz-lookup/actions/workflows/node.js.yml)
+[![GitHub issues](https://img.shields.io/github/issues/photostructure/tz-lookup.svg)](https://github.com/photostructure/tz-lookup/issues)
+
+
 Fast, memory-efficient time zone lookups from latitude and longitude.
 
 ## What's this fork do?
