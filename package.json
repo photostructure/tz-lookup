@@ -17,6 +17,9 @@
   "license": "CC0-1.0",
   "main": "tz.js",
   "name": "@photostructure/tz-lookup",
+  "publishConfig": {
+    "access": "public"
+  },
   "release-it": {
     "github": {
       "release": true
