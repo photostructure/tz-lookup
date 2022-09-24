@@ -9,16 +9,18 @@ Fast, memory-efficient time zone lookups from latitude and longitude.
 
 ## What's this fork do?
 
-This is a fork of `tz-lookup` originally written by [DarkSkyApp](https://github.com/darkskyapp/tz-lookup-oss) who archived the project in 2020.
+This is a fork of [darkskyapp/tz-lookup](https://github.com/darkskyapp/tz-lookup-oss) which was abandoned in 2020.
 
-* ✨ The time zone shapefiles now use
+The following updates have been made:
+
+* The time zone shapefiles now use
 [2021c](https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2021c). Expect a bunch of changes if you're upgrading from the original `tz-lookup`, including new zone names.
 
-* ✨ TypeScript types are now included
+* TypeScript types are now included.
 
-* ✨ The test suite now validates the result from this library with the more accurate library, [`geo-tz`](https://github.com/evansiroky/node-geo-tz/)
+* The test suite now validates the result from this library with the more accurate library, [`geo-tz`](https://github.com/evansiroky/node-geo-tz/).
 
-* ✨ The test suite is automatically run by GitHub Actions
+* GitHub Actions now runs the test suite.
 
 ## Usage
 
