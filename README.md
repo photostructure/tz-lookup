@@ -7,11 +7,11 @@
 
 Fast, memory-efficient time zone lookups from latitude and longitude.
 
-## What's this fork do?
+## Background
 
 This is a fork of [darkskyapp/tz-lookup](https://github.com/darkskyapp/tz-lookup-oss) which was abandoned in 2020.
 
-The following updates have been made:
+The following updates have been made to this fork:
 
 * The time zone shapefiles now use
 [2021c](https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2021c). Expect a bunch of changes if you're upgrading from the original `tz-lookup`, including new zone names.
