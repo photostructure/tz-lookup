@@ -1127,13 +1127,13 @@ describe("tzlookup", function () {
   }
 
   if (globalThis.window == null) {
-    const iters = 100_000;
+    const iters = 25_000; // GHA on mac times out if this is 100k
     const { Info } = require("luxon");
     const { find } = require("geo-tz");
     const inhabited = require("inhabited");
 
     const locs = [];
-    for (let iter = 0; iter < 100_000; iter++) {
+    for (let iter = 0; iter < iters; iter++) {
       locs.push([rnd(-90, 90), rnd(-180, 180)]);
     }
     function elapsed(f, num = iters) {
@@ -1169,7 +1169,7 @@ describe("tzlookup", function () {
     it("Matches random locations", () => {
       let matches = 0;
       const errors = [];
-      for (let iter = 0; iter < 100_000; iter++) {
+      for (let iter = 0; iter < iters; iter++) {
         const lat = rnd(-90, 90);
         const lon = rnd(-180, 180);
         // standard timestamp:
