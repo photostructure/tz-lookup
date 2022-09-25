@@ -1117,6 +1117,109 @@ describe("tzlookup", function() {
   
   TestCases.forEach(pass);
 
+  function rnd(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  if (globalThis.window == null) {
+    const iters = 100_000;
+    const { Info } = require("luxon");
+    const { find } = require("geo-tz");
+    const inhabited = require("inhabited");
+
+    const locs = [];
+    for (let iter = 0; iter < 100_000; iter++) {
+      locs.push([rnd(-90, 90), rnd(-180, 180)]);
+    }
+    function elapsed(f, num = iters) {
+      const start = process?.hrtime?.bigint();
+      for (let iter = 0; iter < num; iter++) {
+        f(...locs[iter]);
+      }
+      const end = process?.hrtime?.bigint();
+      if (start != null && end != null) {
+        console.log(Math.round(Number(end - start) / num) + "ns per iteration");
+      }
+    }
+
+    it("speed test for geo-tz (warmup)", function () {
+      elapsed(find, 100);
+    });
+    it("speed test for tz-lookup (warmup)", function () {
+      elapsed(tz, 100);
+    });
+    it("speed test for geo-tz", function () {
+      elapsed(find);
+    });
+    it("speed test for tz-lookup", function () {
+      elapsed(tz);
+    });
+    it("speed test for geo-tz (cached)", function () {
+      elapsed(find);
+    });
+    it("speed test for tz-lookup (cached)", function () {
+      elapsed(tz);
+    });
+
+    it("Matches random locations", () => {
+      let matches = 0;
+      const errors = [];
+      for (let iter = 0; iter < 100_000; iter++) {
+        const lat = rnd(-90, 90);
+        const lon = rnd(-180, 180);
+        // standard timestamp:
+        const ts1 = new Date("2021-01-01T00:00:00Z").getTime();
+        // "summer" or DST timestamp:
+        const ts2 = new Date("2021-08-01T00:00:00Z").getTime();
+        
+        // if we test only "inhabited" locations, we only see ~5% incorrect
+        // timezones. This jumps to 30% if we test marine locations.
+        if (inhabited(lat, lon)) {
+          const actual = tz(lat, lon);
+          const expected = find(lat, lon);
+          if (!expected.some((ea) => ea === actual)) {
+            // Is it an equivalent(ish) zone name?
+            const actualZone = Info.normalizeZone(actual);
+            if (!actualZone.isValid) throw new Error("Invalid zone: " + actual);
+            const actualStandardOffset = actualZone.offset(ts1);
+            const actualDstOffset = actualZone.offset(ts2);
+
+            const expZone = Info.normalizeZone(expected[0]);
+            if (!expZone.isValid)
+              throw new Error("Invalid zone: " + expected[0]);
+            const expStandardOffset = expZone.offset(ts1);
+            const expDstOffset = expZone.offset(ts2);
+
+            if (
+              actualStandardOffset !== expStandardOffset ||
+              actualDstOffset !== expDstOffset
+            ) {
+              errors.push({
+                lat,
+                lon,
+                actual,
+                expected,
+                actualStandardOffset,
+                actualDstOffset,
+                expStandardOffset,
+                expDstOffset,
+              });
+            } else {
+              matches++;
+            }
+          } else {
+            matches++;
+          }
+        }
+      }
+      const percentMismatch = Math.round((100 * errors.length) / matches);
+      console.log({ percentMismatch });
+      if (percentMismatch > 8) {
+        console.log(errors.slice(0, 10));
+        throw new Error("Too many errors");
+      }
+    });
+  }
   // Sanity-check that bad inputs fail.
   [
     [100, 10],
