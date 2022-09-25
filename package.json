@@ -6,7 +6,10 @@
   "description": "fast time zone lookup",
   "devDependencies": {
     "geo-tz": "^7.0.2",
+    "inhabited": "^2.0.3",
+    "luxon": "^3.0.4",
     "mocha": "^10.0.0",
+    "prettier": "^2.7.1",
     "uglify-js": "^3.17.1"
   },
   "keywords": [
@@ -31,7 +34,8 @@
   },
   "types": "index.d.ts",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "prettier": "prettier --write test.js tz_template.js pack.js"
   },
   "version": "7.0.0"
 }
