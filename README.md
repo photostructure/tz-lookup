@@ -4,8 +4,7 @@
 [![Build status](https://github.com/photostructure/tz-lookup/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/photostructure/tz-lookup/actions/workflows/node.js.yml)
 [![GitHub issues](https://img.shields.io/github/issues/photostructure/tz-lookup.svg)](https://github.com/photostructure/tz-lookup/issues)
 
-
-Fast, memory-efficient time zone lookups from latitude and longitude.
+Fast, memory-efficient time zone estimations from latitude and longitude.
 
 ## Background
 
@@ -21,6 +20,29 @@ The following updates have been made to this fork:
 * The test suite now validates the result from this library with the more accurate library, [`geo-tz`](https://github.com/evansiroky/node-geo-tz/).
 
 * GitHub Actions now runs the test suite.
+
+## Caution!
+
+**This package trades speed and size for accuracy.** 
+
+It's 10x (!!) smaller than
+[geo-tz](https://github.com/evansiroky/node-geo-tz/)
+([73kb](https://bundlephobia.com/package/@photostructure/tz-lookup@7.0.0) vs
+[941kb](https://bundlephobia.com/package/geo-tz@7.0.2)).
+
+It's roughly 20x faster than `geo-tz`, as well. As of 2022-09-24, this package
+takes roughly 40 nanoseconds per lookup on an AMD 5950x (a very fast desktop CPU). On the same hardware, `geo-tz` takes
+1-4 milliseconds per lookup.
+
+**But**. _Yeah, you knew there was a "but" coming._
+
+If you take a random point on the earth, roughly 30% of the results from this package won't match the (accurate) result from `geo-tz`. 
+
+This drops to roughly 10% if you only pick points that are likely [inhabited](https://github.com/darkskyapp/inhabited).
+
+This error rate drops to roughly 5% if you consider time zones (like `Europe/Vienna` and `Europe/Berlin`) that render mostly equivalent time zone offset values.
+
+**If accuracy is important for your application and you don't need to support browsers, use `geo-tz`.**
 
 ## Usage
 
