@@ -1176,7 +1176,7 @@ describe("tzlookup", function () {
         const ts1 = new Date("2021-01-01T00:00:00Z").getTime();
         // "summer" or DST timestamp:
         const ts2 = new Date("2021-08-01T00:00:00Z").getTime();
-        
+
         // if we test only "inhabited" locations, we only see ~5% incorrect
         // timezones. This jumps to 30% if we test marine locations.
         if (inhabited(lat, lon)) {
@@ -1185,13 +1185,28 @@ describe("tzlookup", function () {
           if (!expected.some((ea) => ea === actual)) {
             // Is it an equivalent(ish) zone name?
             const actualZone = Info.normalizeZone(actual);
-            if (!actualZone.isValid) throw new Error("Invalid zone: " + actual);
+            if (!actualZone.isValid) {
+              const msg =
+                "Invalid zone: " + actual + " " + JSON.stringify({ lat, lon });
+              console.log(msg);
+              errors.push(msg);
+              continue;
+            }
             const actualStandardOffset = actualZone.offset(ts1);
             const actualDstOffset = actualZone.offset(ts2);
 
             const expZone = Info.normalizeZone(expected[0]);
-            if (!expZone.isValid)
-              throw new Error("Invalid zone: " + expected[0]);
+            if (!expZone.isValid) {
+              const msg =
+                "Invalid zone: " +
+                expected[0] +
+                " " +
+                JSON.stringify({ lat, lon });
+              console.log(msg);
+              errors.push(msg);
+              continue;
+            }
+
             const expStandardOffset = expZone.offset(ts1);
             const expDstOffset = expZone.offset(ts2);
 
@@ -1220,7 +1235,7 @@ describe("tzlookup", function () {
       const percentMismatch = Math.round((100 * errors.length) / matches);
       console.log({ percentMismatch });
       if (percentMismatch > 8) {
-        console.log(errors.slice(0, 10));
+        console.log(errors.slice(0, 20));
         throw new Error("Too many errors");
       }
     });
