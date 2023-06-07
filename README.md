@@ -13,7 +13,7 @@ This is a fork of [darkskyapp/tz-lookup](https://github.com/darkskyapp/tz-lookup
 The following updates have been made to this fork:
 
 * The time zone shapefiles now use
-[2021c](https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2021c). Expect a bunch of changes if you're upgrading from the original `tz-lookup`, including new zone names.
+[2023b](https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2023b). Expect a bunch of changes if you're upgrading from the original `tz-lookup`, including new zone names.
 
 * TypeScript types are now included.
 
@@ -85,11 +85,11 @@ alert(tzlookup(42.7235, -73.6931)); // alerts "America/New_York"
 ## Sources
 
 Timezone data is sourced from Evan Siroky's [timezone-boundary-builder][tbb].
-The database was last updated on 24 September 2022 to use the new 2021c dataset.
+The database was last updated on 6 June 2023 to use the new 2023b dataset.
 
 To regenerate the library's database yourself, you will need to install GDAL:
 
-```
+```sh
 $ brew install gdal # on Mac OS X
 $ sudo apt install gdal-bin # on Ubuntu
 ```
