@@ -1,4 +1,5 @@
 describe("tzlookup", function () {
+  this.timeout(10_000) // windows GHA is slow
   "use strict";
   var tz;
   if (typeof tzlookup !== "undefined") {
