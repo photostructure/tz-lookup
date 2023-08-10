@@ -287,7 +287,7 @@ function tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, depth) {
       min_lat,
       min_lon,
       max_lat,
-      max_lon
+      max_lon,
     );
     if (overlap < EPS) {
       continue;
@@ -377,7 +377,7 @@ function tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, depth) {
       min_lon,
       max_lat,
       mid_lon,
-      child_depth
+      child_depth,
     ),
     tile(
       subset_candidates,
@@ -386,7 +386,7 @@ function tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, depth) {
       mid_lon,
       max_lat,
       max_lon,
-      child_depth
+      child_depth,
     ),
     tile(
       subset_candidates,
@@ -395,7 +395,7 @@ function tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, depth) {
       min_lon,
       mid_lat,
       mid_lon,
-      child_depth
+      child_depth,
     ),
     tile(
       subset_candidates,
@@ -404,7 +404,7 @@ function tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, depth) {
       mid_lon,
       mid_lat,
       max_lon,
-      child_depth
+      child_depth,
     ),
   ];
 
@@ -462,7 +462,7 @@ for (let row = 0; row < ROWS; row++) {
       min_lon,
       max_lat,
       max_lon,
-      1
+      1,
     );
   }
 }
@@ -532,5 +532,5 @@ console.log(
   fs
     .readFileSync("tz_template.js", "utf8")
     .replace(/__TZDATA__/, () => JSON.stringify(tz_data))
-    .replace(/__TZLIST__/, () => JSON.stringify(tz_list))
+    .replace(/__TZLIST__/, () => JSON.stringify(tz_list)),
 );

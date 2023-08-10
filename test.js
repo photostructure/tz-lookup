@@ -1,6 +1,6 @@
 describe("tzlookup", function () {
-  this.timeout(10_000) // windows GHA is slow
-  "use strict";
+  this.timeout(10_000); // windows GHA is slow
+  ("use strict");
   var tz;
   if (typeof tzlookup !== "undefined") {
     tz = tzlookup;
@@ -28,10 +28,10 @@ describe("tzlookup", function () {
 
         if (actual !== expected) {
           throw new Error(
-            'expected "' + actual + '" to equal "' + expected + '"'
+            'expected "' + actual + '" to equal "' + expected + '"',
           );
         }
-      }
+      },
     );
 
     if (globalThis.window == null) {
@@ -46,10 +46,10 @@ describe("tzlookup", function () {
                 expectedGeoTz +
                 '" but geo-tz says "' +
                 actual +
-                '"'
+                '"',
             );
           }
-        }
+        },
       );
     }
   }
