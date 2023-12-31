@@ -37,5 +37,5 @@
     "test": "mocha",
     "prettier": "prettier --write test.js tz_template.js pack.js"
   },
-  "version": "8.0.0"
+  "version": "9.0.0"
 }
