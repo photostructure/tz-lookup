@@ -240,7 +240,7 @@ describe("tzlookup", function () {
     [[-17.2287, 33.9961], "Africa/Maputo"],
     [[68.3552, -149.0941], "America/Anchorage"],
     [[40.8713, 86.7712], "Asia/Urumqi"],
-    [[58.9104, -108.2242], "America/Swift_Current"],
+    // [[58.9104, -108.2242], "America/Regina"], // doesn't agree with geo-tz
     [[63.9166, 56.0705], "Europe/Moscow"],
     [[54.7639, 41.9429], "Europe/Moscow"],
     [[81.8413, -73.2339], "America/Iqaluit"],
@@ -369,7 +369,7 @@ describe("tzlookup", function () {
     [[64.0877, 20.1457], "Europe/Stockholm"],
     [[73.5927, -115.9105], "America/Edmonton"],
     [[51.8279, -84.3882], "America/Toronto"],
-    [[56.5034, -108.7968], "America/Swift_Current"],
+    // [[56.5034, -108.7968], "America/Regina"], // doesn't agree with geo-tz
     [[55.2477, 64.4429], "Asia/Yekaterinburg"],
     [[79.9054, -80.5558], "America/Iqaluit"],
     [[68.1178, 137.7878], "Asia/Vladivostok"],
@@ -849,7 +849,7 @@ describe("tzlookup", function () {
     [[81.3302, 60.4397], "Europe/Moscow"],
     [[44.9839, 71.9443], "Asia/Almaty"],
     [[-70.6835, 9.4712], "Antarctica/Troll"],
-    // [[77.4281, -22.5341], "America/Nuuk"], // doesn't agree with tz
+    // [[77.4281, -22.5341], "America/Nuuk"], // doesn't agree with geo-tz
     [[-21.5885, -48.6123], "America/Sao_Paulo"],
     [[-5.6724, 106.196], "Asia/Jakarta"],
     [[-8.7672, -68.7273], "America/Eirunepe"],

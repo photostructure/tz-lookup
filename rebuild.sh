@@ -2,7 +2,7 @@
 set -ex
 
 # Latest release is here: https://github.com/evansiroky/timezone-boundary-builder/releases
-TZ="2023b"
+TZ="2023d"
 
 rm -rf timezones.geojson.zip dist ne_10m_urban_areas.*
 curl -L --retry 3 -C - \
