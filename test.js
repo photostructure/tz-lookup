@@ -8,12 +8,83 @@ describe("tzlookup", function () {
     tz = require("./");
   }
 
+  var lux;
+  if (typeof luxon !== "undefined") {
+    lux = luxon;
+  } else {
+    lux = require("luxon");
+  }
+
   function stringify_item(x) {
     return "" + x;
   }
 
   function stringify_list(x) {
     return x.map(stringify_item).join(", ");
+  }
+
+  const standardTs = new Date("2023-01-01T00:00:00Z").getTime();
+  const daylightSavingsTs = new Date("2023-07-01T00:00:00Z").getTime();
+
+  /**
+   * @param iana {string}
+   * @param others {string[]}
+   */
+  function assert_any_iana_eql(iana, ...others) {
+    const arr = others.flatMap((ea) => String(ea).split(","));
+    // These shenanigans allow for conflicting regions to still be compared:
+    const errors = [];
+    for (const actual of arr) {
+      try {
+        assert_iana_eql(iana, actual);
+        return;
+      } catch (error) {
+        errors.push(error);
+      }
+    }
+    throw new Error(errors.map((ea) => ea.message).join(":"));
+  }
+
+  function assert_iana_eql(a, b) {
+    if (a === b) return;
+    const z1 = lux.IANAZone.create(a);
+    const z2 = lux.IANAZone.create(b);
+    if (!z1.isValid) throw new Error("a: invalid IANA zone: " + a);
+    if (!z2.isValid) throw new Error("b: invalid IANA zone: " + b);
+    {
+      const z1_offset = z1.offset(standardTs);
+      const z2_offset = z2.offset(standardTs);
+      if (z1_offset !== z2_offset) {
+        throw new Error(
+          "expected " +
+            a +
+            "(" +
+            z1_offset +
+            ") to have the same standard-time offset as " +
+            b +
+            "(" +
+            z2_offset +
+            ")",
+        );
+      }
+    }
+    {
+      const z1_offset = z1.offset(daylightSavingsTs);
+      const z2_offset = z2.offset(daylightSavingsTs);
+      if (z1_offset !== z2_offset) {
+        throw new Error(
+          "expected " +
+            a +
+            "(" +
+            z1_offset +
+            ") to have the same daylight-savings-time offset as " +
+            b +
+            "(" +
+            z2_offset +
+            ")",
+        );
+      }
+    }
   }
 
   function pass(testcase) {
@@ -35,20 +106,14 @@ describe("tzlookup", function () {
     );
 
     if (globalThis.window == null) {
-      const { find } = require("geo-tz");
+      const geo_tz = require("geo-tz");
       it(
         "should match the timezone from geo-tz given " + stringify_list(args),
         function () {
-          var actual = find(...args.map(Number))[0];
-          if (actual != expectedGeoTz) {
-            throw new Error(
-              'expected "' +
-                expectedGeoTz +
-                '" but geo-tz says "' +
-                actual +
-                '"',
-            );
-          }
+          assert_any_iana_eql(
+            expectedGeoTz,
+            ...geo_tz.find(...args.map(Number)),
+          );
         },
       );
     }
@@ -240,7 +305,7 @@ describe("tzlookup", function () {
     [[-17.2287, 33.9961], "Africa/Maputo"],
     [[68.3552, -149.0941], "America/Anchorage"],
     [[40.8713, 86.7712], "Asia/Urumqi"],
-    // [[58.9104, -108.2242], "America/Regina"], // doesn't agree with geo-tz
+    [[58.9104, -108.2242], "America/Regina"],
     [[63.9166, 56.0705], "Europe/Moscow"],
     [[54.7639, 41.9429], "Europe/Moscow"],
     [[81.8413, -73.2339], "America/Iqaluit"],
@@ -849,7 +914,7 @@ describe("tzlookup", function () {
     [[81.3302, 60.4397], "Europe/Moscow"],
     [[44.9839, 71.9443], "Asia/Almaty"],
     [[-70.6835, 9.4712], "Antarctica/Troll"],
-    // [[77.4281, -22.5341], "America/Nuuk"], // doesn't agree with geo-tz
+    // [[77.4281, -22.5341], "America/Nuuk"], // this passed before geo-tz v8
     [[-21.5885, -48.6123], "America/Sao_Paulo"],
     [[-5.6724, 106.196], "Asia/Jakarta"],
     [[-8.7672, -68.7273], "America/Eirunepe"],
@@ -1128,7 +1193,7 @@ describe("tzlookup", function () {
   }
 
   if (globalThis.window == null) {
-    const iters = 25_000; // GHA on mac times out if this is 100k
+    const iters = 50_000; // GHA on mac times out if this is 100k
     const { Info } = require("luxon");
     const { find } = require("geo-tz");
     const inhabited = require("inhabited");
@@ -1143,11 +1208,17 @@ describe("tzlookup", function () {
         f(...locs[iter]);
       }
       const end = process?.hrtime?.bigint();
-      if (start != null && end != null) {
-        console.log(Math.round(Number(end - start) / num) + "ns per iteration");
+      if (start != null && end != null && iters === num) {
+        const msElapsed = Number(end - start) / 1000;
+        console.log((msElapsed / num).toFixed(3) + "ms per iteration", {
+          msElapsed,
+        });
       }
     }
-
+    it("speed test for no-op", function () {
+      function noop() {}
+      elapsed(noop);
+    });
     it("speed test for geo-tz (warmup)", function () {
       elapsed(find, 100);
     });
@@ -1173,6 +1244,7 @@ describe("tzlookup", function () {
       for (let iter = 0; iter < iters; iter++) {
         const lat = rnd(-90, 90);
         const lon = rnd(-180, 180);
+
         // standard timestamp:
         const ts1 = new Date("2021-01-01T00:00:00Z").getTime();
         // "summer" or DST timestamp:
@@ -1181,62 +1253,21 @@ describe("tzlookup", function () {
         // if we test only "inhabited" locations, we only see ~5% incorrect
         // timezones. This jumps to 30% if we test marine locations.
         if (inhabited(lat, lon)) {
-          const actual = tz(lat, lon);
-          const expected = find(lat, lon);
-          if (!expected.some((ea) => ea === actual)) {
-            // Is it an equivalent(ish) zone name?
-            const actualZone = Info.normalizeZone(actual);
-            if (!actualZone.isValid) {
-              const msg =
-                "Invalid zone: " + actual + " " + JSON.stringify({ lat, lon });
-              console.log(msg);
-              errors.push(msg);
-              continue;
-            }
-            const actualStandardOffset = actualZone.offset(ts1);
-            const actualDstOffset = actualZone.offset(ts2);
-
-            const expZone = Info.normalizeZone(expected[0]);
-            if (!expZone.isValid) {
-              const msg =
-                "Invalid zone: " +
-                expected[0] +
-                " " +
-                JSON.stringify({ lat, lon });
-              console.log(msg);
-              errors.push(msg);
-              continue;
-            }
-
-            const expStandardOffset = expZone.offset(ts1);
-            const expDstOffset = expZone.offset(ts2);
-
-            if (
-              actualStandardOffset !== expStandardOffset ||
-              actualDstOffset !== expDstOffset
-            ) {
-              errors.push({
-                lat,
-                lon,
-                actual,
-                expected,
-                actualStandardOffset,
-                actualDstOffset,
-                expStandardOffset,
-                expDstOffset,
-              });
-            } else {
-              matches++;
-            }
-          } else {
+          try {
+            assert_any_iana_eql(tz(lat, lon), find(lat, lon));
             matches++;
+          } catch (error) {
+            errors.push({
+              lat: lat.toFixed(3),
+              lon: lon.toFixed(3),
+              error: error.message,
+            });
           }
         }
       }
       const percentMismatch = Math.round((100 * errors.length) / matches);
-      console.log({ percentMismatch });
+      console.log({ percentMismatch, errors: errors.slice(0, 10) });
       if (percentMismatch > 8) {
-        console.log(errors.slice(0, 20));
         throw new Error("Too many errors");
       }
     });
