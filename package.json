@@ -5,7 +5,7 @@
   },
   "description": "fast time zone lookup",
   "devDependencies": {
-    "geo-tz": "^7.0.7",
+    "geo-tz": "^8.0.1",
     "inhabited": "^2.0.3",
     "luxon": "^3.4.4",
     "mocha": "^10.2.0",
