@@ -12,37 +12,90 @@ This is a fork of [darkskyapp/tz-lookup](https://github.com/darkskyapp/tz-lookup
 
 The following updates have been made to this fork:
 
-* The time zone shapefiles now use
-[2023d](https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2023d). Expect a bunch of changes if you're upgrading from the original `tz-lookup`, including new zone names and shapes.
+- The time zone shapefiles now use
+  [2023d](https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2023d). Expect a bunch of changes if you're upgrading from the original `tz-lookup`, including new zone names and shapes.
 
-* TypeScript types are now included.
+- TypeScript types are now included.
 
-* The test suite now validates the result from this library with the more accurate library, [`geo-tz`](https://github.com/evansiroky/node-geo-tz/).
+- The test suite now validates the result from this library with the more accurate library, [`geo-tz`](https://github.com/evansiroky/node-geo-tz/), and provides benchmark timing results.
 
-* GitHub Actions now runs the test suite.
+- GitHub Actions now runs the test suite.
 
-## Caution!
+## Caution! This package trades speed and size for accuracy.
 
-**This package trades speed and size for accuracy.** 
+**TL;DR: if accuracy is important for your application and you don't need to support browsers, use `geo-tz`.**
 
-It's 10x (!!) smaller than
-[geo-tz](https://github.com/evansiroky/node-geo-tz/)
-([73kb](https://bundlephobia.com/package/@photostructure/tz-lookup@7.0.0) vs
-[941kb](https://bundlephobia.com/package/geo-tz@7.0.2)).
+The following comparisons were taken in January 2024 with the latest versions of Node.js, this package, and geo-tz.
 
-It's roughly 20x faster than `geo-tz`, as well. As of 2022-09-24, this package
-takes roughly 40 nanoseconds per lookup on an AMD 5950x (a very fast desktop CPU). On the same hardware, `geo-tz` takes
-1-4 milliseconds per lookup.
+### Size
 
-**But**. _Yeah, you knew there was a "but" coming._
+This package is 10x smaller than
+[geo-tz](https://github.com/evansiroky/node-geo-tz/):
+([72kb](https://bundlephobia.com/package/@photostructure/tz-lookup@9.0.0) vs
+[892kb](https://bundlephobia.com/package/geo-tz@8.0.1)).
 
-If you take a random point on the earth, roughly 30% of the results from this package won't match the (accurate) result from `geo-tz`. 
+### Speed
+
+This package is roughly 100x faster than `geo-tz`, as well. On an AMD 5950x (a fast desktop CPU from 2023) and Node.js v20:
+
+- this package takes **~.05 milliseconds** per lookup, and
+- `geo-tz` takes **~5 milliseconds** per lookup.
+
+### Accuracy
+
+If you take a random point on the earth, roughly 30% of the results from this package won't match the (accurate) result from `geo-tz`.
 
 This drops to roughly 10% if you only pick points that are likely [inhabited](https://github.com/darkskyapp/inhabited).
 
-This error rate drops to roughly 5% if you consider time zones (like `Europe/Vienna` and `Europe/Berlin`) that render mostly equivalent time zone offset values.
+This error rate drops to roughly 5% if you consider time zones (like `Europe/Vienna` and `Europe/Berlin`) that result in equivalent time zone offset values throughout the year.
 
-**If accuracy is important for your application and you don't need to support browsers, use `geo-tz`.**
+Here's a sample of some errors from this page for some random locations from running the test suite. The first mentioned IANA timezone is from this package, and the second (probably more correct) IANA timezone is from `geo-tz`. 
+
+```json
+[
+  {
+    "lat": "24.881",
+    "lon": "59.984",
+    "error": "expected Asia/Tehran(210) to have the same standard-time offset as Etc/GMT-4(240)"
+  },
+  {
+    "lat": "46.345",
+    "lon": "48.766",
+    "error": "expected Asia/Atyrau(300) to have the same standard-time offset as Europe/Astrakhan(240)"
+  },
+  {
+    "lat": "59.275",
+    "lon": "134.481",
+    "error": "expected Asia/Vladivostok(600) to have the same standard-time offset as Asia/Khandyga(540)"
+  },
+  {
+    "lat": "20.645",
+    "lon": "100.190",
+    "error": "expected Asia/Yangon(390) to have the same standard-time offset as Asia/Jakarta(420)"
+  },
+  {
+    "lat": "38.012",
+    "lon": "0.082",
+    "error": "expected Europe/Madrid(60) to have the same standard-time offset as Etc/GMT(0)"
+  },
+  {
+    "lat": "-22.364",
+    "lon": "-57.449",
+    "error": "expected America/Campo_Grande(-240) to have the same standard-time offset as America/Asuncion(-180)"
+  },
+  {
+    "lat": "39.018",
+    "lon": "-73.842",
+    "error": "expected America/New_York(-240) to have the same daylight-savings-time offset as Etc/GMT+5(-300)"
+  },
+  {
+    "lat": "28.427",
+    "lon": "-95.793",
+    "error": "expected America/Chicago(-300) to have the same daylight-savings-time offset as Etc/GMT+6(-360)"
+  }
+]
+```
+
 
 ## Usage
 
@@ -62,25 +115,25 @@ Browser usage:
 ```html
 <script src="tz.js"></script>
 <script>
-alert(tzlookup(42.7235, -73.6931)); // alerts "America/New_York"
+  alert(tzlookup(42.7235, -73.6931)); // alerts "America/New_York"
 </script>
 ```
 
 **Please take note of the following:**
 
-*   The exported function call will throw an error if the latitude or longitude
-    provided are NaN or out of bounds. Otherwise, it will never throw an error
-    and will always return an IANA timezone database string. (Barring bugs.)
+- The exported function call will throw an error if the latitude or longitude
+  provided are NaN or out of bounds. Otherwise, it will never throw an error
+  and will always return an IANA timezone database string. (Barring bugs.)
 
-*   The timezones returned by this module are approximate: since the timezone
-    database is so large, lossy compression is necessary for a small footprint
-    and fast lookups. Expect errors near timezone borders far away from
-    populated areas. However, for most use-cases, this module's accuracy should
-    be adequate.
-    
-    If you find a real-world case where this module's accuracy is inadequate,
-    please open an issue (or, better yet, submit a pull request with a failing
-    test) and I'll see what I can do to increase the accuracy for you.
+- The timezones returned by this module are approximate: since the timezone
+  database is so large, lossy compression is necessary for a small footprint
+  and fast lookups. Expect errors near timezone borders far away from
+  populated areas. However, for most use-cases, this module's accuracy should
+  be adequate.
+
+  If you find a real-world case where this module's accuracy is inadequate,
+  please open an issue (or, better yet, submit a pull request with a failing
+  test) and I'll see what I can do to increase the accuracy for you.
 
 ## Sources
 
@@ -106,4 +159,4 @@ copyright and related or neighboring rights][cc0] to this library.
 
 [cc0]: http://creativecommons.org/publicdomain/zero/1.0/
 
-Any subsequent changes since the fork are also licensed via cc0. 
+Any subsequent changes since the fork are also licensed via cc0.
