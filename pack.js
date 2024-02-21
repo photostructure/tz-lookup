@@ -126,6 +126,7 @@ for (const [lat, lon] of [
   [41.1426, -86.89009], // fix #59
   [40.7608, -87.12402], // fix #59
   [41.1938, -86.48956], // fix #59
+  [29.562549, 34.945442], // Eilat
 ]) {
   urban_geojson.features.push({
     properties: {
