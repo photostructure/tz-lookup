@@ -221,7 +221,7 @@ describe("tzlookup", function () {
     [[68.1133, 23.3214], "Europe/Stockholm"], // #56 (Kätkesuando)
     [[40.7084, -86.69554], "America/Indiana/Indianapolis"], // #59
     [[41.0523, -86.70629], "America/Indiana/Winamac"], // #59
-    [[29.547470, 34.947252], "Asia/Jerusalem"], // Eilat
+    [[29.54747, 34.947252], "Asia/Jerusalem"], // Eilat
 
     // Check that we resolve conflicting zones adequately.
     [[43.825, 87.6], "Asia/Urumqi"],
