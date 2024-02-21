@@ -8,8 +8,8 @@
     "geo-tz": "^8.0.1",
     "inhabited": "^2.0.3",
     "luxon": "^3.4.4",
-    "mocha": "^10.2.0",
-    "prettier": "^3.2.4",
+    "mocha": "^10.3.0",
+    "prettier": "^3.2.5",
     "uglify-js": "^3.17.4"
   },
   "keywords": [
