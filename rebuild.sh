@@ -1,8 +1,10 @@
 #!/bin/bash
 set -ex
 
+# Remember to update the README.md with the new version!
 # Latest release is here: https://github.com/evansiroky/timezone-boundary-builder/releases
 TZ="2024a"
+
 
 rm -rf timezones.geojson.zip dist ne_10m_urban_areas.*
 curl -L --retry 3 -C - \
