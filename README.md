@@ -8,7 +8,7 @@ Fast, memory-efficient time zone estimations from latitude and longitude.
 
 ## Background
 
-This is a fork of [darkskyapp/tz-lookup](https://github.com/darkskyapp/tz-lookup-oss) which was abandoned in 2020.
+This is a fork of [darkskyapp/tz-lookup](https://github.com/darkskyapp/tz-lookup-oss) which was abandoned in 2020. Ongoing maintenance is supported by [PhotoStructure](https://photostructure.com).
 
 The following updates have been made to this fork:
 
