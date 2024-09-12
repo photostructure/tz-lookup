@@ -435,7 +435,7 @@ describe("tzlookup", function () {
     [[64.0877, 20.1457], "Europe/Stockholm"],
     [[73.5927, -115.9105], "America/Edmonton"],
     [[51.8279, -84.3882], "America/Toronto"],
-    [[56.5034, -108.7968], "America/Regina"], 
+    [[56.5034, -108.7968], "America/Regina"],
     [[55.2477, 64.4429], "Asia/Yekaterinburg"],
     [[79.9054, -80.5558], "America/Iqaluit"],
     [[68.1178, 137.7878], "Asia/Vladivostok"],
