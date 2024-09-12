@@ -5,12 +5,12 @@
   },
   "description": "fast time zone lookup",
   "devDependencies": {
-    "geo-tz": "^8.0.2",
+    "geo-tz": "^8.1.1",
     "inhabited": "^2.0.3",
-    "luxon": "^3.4.4",
-    "mocha": "^10.3.0",
-    "prettier": "^3.2.5",
-    "uglify-js": "^3.17.4"
+    "luxon": "^3.5.0",
+    "mocha": "^10.7.3",
+    "prettier": "^3.3.3",
+    "uglify-js": "^3.19.3"
   },
   "keywords": [
     "tz",
