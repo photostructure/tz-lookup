@@ -3,7 +3,7 @@ set -ex
 
 # Remember to update the README.md with the new version!
 # Latest release is here: https://github.com/evansiroky/timezone-boundary-builder/releases
-TZ="2024b"
+TZ="2025a"
 
 rm -rf timezones.geojson.zip dist ne_10m_urban_areas.*
 curl -L --retry 3 -C - \
@@ -18,6 +18,8 @@ curl -L --retry 3 -C - \
 # -o: overwrite existing files
 # -u: update existing files and create new ones if needed
 unzip -o -u timezones.geojson.zip
+
+# sudo apt install -y gdal-bin
 ogr2ogr -f GeoJSON ne_10m_urban_areas.json ne_10m_urban_areas.shp
 # pack.js takes about a minute to complete. 
 
@@ -29,4 +31,4 @@ ogr2ogr -f GeoJSON ne_10m_urban_areas.json ne_10m_urban_areas.shp
 
 # the packed sizes are very similar as most of the payload
 # is the encoded quadtree.
-node pack.js | ./node_modules/.bin/uglifyjs -mc >tz.js
+time node pack.js | ./node_modules/.bin/uglifyjs -mc >tz.js

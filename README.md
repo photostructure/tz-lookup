@@ -13,7 +13,7 @@ This is a fork of [darkskyapp/tz-lookup](https://github.com/darkskyapp/tz-lookup
 The following updates have been made to this fork:
 
 - The time zone database uses
-  [2024b](https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2024b). Expect a bunch of changes if you're upgrading from the original `tz-lookup`, including new zone names and shapes.
+  [2025a](https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2025a). Expect a bunch of changes if you're upgrading from the original `tz-lookup`, including new zone names and shapes.
 
 - TypeScript types are now included.
 
