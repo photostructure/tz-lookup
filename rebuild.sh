@@ -3,7 +3,7 @@ set -ex
 
 # Remember to update the README.md with the new version!
 # Latest release is here: https://github.com/evansiroky/timezone-boundary-builder/releases
-TZ="2025a"
+TZ="2025b"
 
 rm -rf timezones.geojson.zip dist ne_10m_urban_areas.*
 curl -L --retry 3 -C - \
@@ -21,7 +21,7 @@ unzip -o -u timezones.geojson.zip
 
 # sudo apt install -y gdal-bin
 ogr2ogr -f GeoJSON ne_10m_urban_areas.json ne_10m_urban_areas.shp
-# pack.js takes about a minute to complete. 
+# pack.js takes about a minute to complete.
 
 # `uglifyjs -mc` takes 300ms and results in a 73k file.
 

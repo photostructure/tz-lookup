@@ -492,7 +492,7 @@ describe("tzlookup", function () {
     [[-25.9807, 26.93], "Africa/Johannesburg"],
     [[61.7306, -48.6246], "America/Nuuk"],
     [[64.2152, 124.0541], "Asia/Yakutsk"],
-    [[-46.1385, -72.9657], "America/Santiago"],
+    [[-46.1385, -72.9657], "America/Coyhaique"], // Changed from America/Santiago 2025b
     [[15.8589, 24.5199], "Africa/Khartoum"],
     [[56.0054, 60.8903], "Asia/Yekaterinburg"],
     [[61.4232, -131.4265], "America/Whitehorse"],
