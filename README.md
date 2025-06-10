@@ -138,7 +138,6 @@ Browser usage:
 ## Sources
 
 Timezone data is sourced from Evan Siroky's [timezone-boundary-builder][tbb].
-The database was last updated on 30 December 2023 to use the 2023d dataset.
 
 To regenerate the library's database yourself, you will need to install GDAL:
 
