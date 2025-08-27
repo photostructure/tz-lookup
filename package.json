@@ -26,8 +26,13 @@
   "release-it": {
     "github": {
       "release": true
+    },
+    "npm": {
+      "publish": true,
+      "skipChecks": true
     }
   },
+  "# release-it.npm.skipChecks": "Required for OIDC Trusted Publishing - bypasses npm auth checks since OIDC handles authentication automatically. See: https://github.com/release-it/release-it/issues/1244 and https://docs.npmjs.com/trusted-publishers#supported-cicd-providers",
   "repository": {
     "type": "git",
     "url": "git://github.com:photostructure/tz-lookup.git"

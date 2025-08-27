@@ -1,7 +1,6 @@
 #!/bin/bash
 set -ex
 
-# Remember to update the README.md with the new version!
 # Latest release is here: https://github.com/evansiroky/timezone-boundary-builder/releases
 TZ="2025b"
 

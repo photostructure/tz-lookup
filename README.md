@@ -1,7 +1,7 @@
 # @photostructure/tz-lookup
 
 [![npm version](https://img.shields.io/npm/v/@photostructure/tz-lookup.svg)](https://www.npmjs.com/package/@photostructure/tz-lookup)
-[![Build status](https://github.com/photostructure/tz-lookup/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/photostructure/tz-lookup/actions/workflows/node.js.yml)
+[![Build status](https://github.com/photostructure/tz-lookup/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/photostructure/tz-lookup/actions/workflows/build.yml)
 [![GitHub issues](https://img.shields.io/github/issues/photostructure/tz-lookup.svg)](https://github.com/photostructure/tz-lookup/issues)
 
 Fast, memory-efficient time zone estimations from latitude and longitude.
@@ -13,13 +13,15 @@ This is a fork of [darkskyapp/tz-lookup](https://github.com/darkskyapp/tz-lookup
 The following updates have been made to this fork:
 
 - The time zone database uses
-  [2025b](https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2025b). Expect a bunch of changes if you're upgrading from the original `tz-lookup`, including new zone names and shapes.
+  [timezone-boundary-builder](https://github.com/evansiroky/timezone-boundary-builder/). Expect a bunch of changes if you're upgrading from the original `tz-lookup`, including new zone names and shapes.
 
 - TypeScript types are now included.
 
 - The test suite now validates the result from this library with the more accurate library, [`geo-tz`](https://github.com/evansiroky/node-geo-tz/), and provides benchmark timing results.
 
-- GitHub Actions now runs the test suite.
+- GitHub Actions now runs the test suite
+
+- Releases are now performed via OIDC, which provides [build provenance](https://docs.github.com/en/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds). Scroll to the "Provenance" section at the bottom of https://www.npmjs.com/package/@photostructure/tz-lookup to validate. 
 
 ## Caution! This package trades speed and size for accuracy.
 
