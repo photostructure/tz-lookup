@@ -33,8 +33,8 @@ jobs:
       uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e
       with:
         node-version: ${{ matrix.node-version }}
-    - run: yarn install
-    - run: yarn test
+    - run: npm install
+    - run: npm test
 
   publish:
     runs-on: ubuntu-24.04
