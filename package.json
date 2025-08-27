@@ -1,6 +1,6 @@
 {
   "name": "@photostructure/tz-lookup",
-  "version": "11.2.0",
+  "version": "11.2.1",
   "description": "fast time zone lookup",
   "keywords": [
     "timezone",
