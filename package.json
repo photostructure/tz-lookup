@@ -33,6 +33,7 @@
     "luxon": "^3.7.1",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
+    "release-it": "^19.0.4",
     "uglify-js": "^3.19.3"
   },
   "repository": {
