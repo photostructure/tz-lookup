@@ -1,0 +1,4 @@
+{
+    "$schema": "https://raw.githubusercontent.com/raineorshine/npm-check-updates/main/src/types/RunOptions.json",
+    "cooldown": 4
+}
