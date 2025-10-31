@@ -127,6 +127,7 @@ for (const [lat, lon] of [
   [40.7608, -87.12402], // fix #59
   [41.1938, -86.48956], // fix #59
   [29.562549, 34.945442], // Eilat
+  [42.9740445, -117.0543038], // Jordan Valley, Oregon
 ]) {
   urban_geojson.features.push({
     properties: {

@@ -149,6 +149,7 @@ describe("tzlookup", function () {
     [[41.1591, -104.8261], "America/Denver"],
     [[35.1991, -111.6348], "America/Phoenix"],
     [[43.1432, -115.675], "America/Boise"],
+    [[42.9740445, -117.0543038], "America/Boise"], // Jordan Valley, Oregon
     [[47.5886, -122.3382], "America/Los_Angeles"],
     [[58.3168, -134.4397], "America/Juneau"],
     [[21.4381, -158.0493], "Pacific/Honolulu"],
