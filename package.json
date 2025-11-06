@@ -30,9 +30,9 @@
   "devDependencies": {
     "geo-tz": "^8.1.4",
     "inhabited": "^2.0.3",
-    "luxon": "^3.7.1",
+    "luxon": "^3.7.2",
     "mocha": "^11.7.1",
-    "npm-check-updates": "^18.2.1",
+    "npm-check-updates": "^19.1.2",
     "prettier": "^3.6.2",
     "release-it": "^19.0.4",
     "uglify-js": "^3.19.3"
@@ -46,6 +46,13 @@
   },
   "# release-it.npm.skipChecks": "Required for OIDC Trusted Publishing - bypasses npm auth checks since OIDC handles authentication automatically. See: https://github.com/release-it/release-it/issues/1244 and https://docs.npmjs.com/trusted-publishers#supported-cicd-providers",
   "release-it": {
+    "git": {
+      "requireBranch": "main",
+      "commitMessage": "chore(package): Release ${version}",
+      "tagName": "${version}",
+      "commitArgs": "--gpg-sign",
+      "tagArgs": "--sign"
+    },
     "github": {
       "release": true
     },
