@@ -30,7 +30,7 @@ jobs:
     steps:
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610  # v3.9.1
+      uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install
@@ -50,7 +50,7 @@ jobs:
           lfs: true
 
       # setup-node with registry-url is required for OIDC trusted publishing
-      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: 20
           cache: "npm"
