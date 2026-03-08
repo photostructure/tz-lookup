@@ -28,13 +28,13 @@
     "release": "release-it"
   },
   "devDependencies": {
-    "geo-tz": "^8.1.4",
+    "geo-tz": "^8.1.5",
     "inhabited": "^2.0.3",
     "luxon": "^3.7.2",
     "mocha": "^11.7.5",
-    "npm-check-updates": "^19.1.2",
-    "prettier": "^3.7.4",
-    "release-it": "^19.0.4",
+    "npm-check-updates": "^19.6.3",
+    "prettier": "^3.8.1",
+    "release-it": "^19.2.4",
     "uglify-js": "^3.19.3"
   },
   "repository": {
