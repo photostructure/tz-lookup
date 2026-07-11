@@ -24,8 +24,7 @@
     "test": "mocha",
     "prettier": "prettier --write package.json test.js tz_template.js pack.js",
     "install:pinact": "go install github.com/suzuki-shunsuke/pinact/v3/cmd/pinact@latest",
-    "update": "npm-check-updates --upgrade --install always && pinact run -u ",
-    "release": "release-it"
+    "update": "npm-check-updates --upgrade --install always && pinact run -u "
   },
   "devDependencies": {
     "geo-tz": "^8.1.7",
@@ -34,7 +33,6 @@
     "mocha": "^11.7.5",
     "npm-check-updates": "^19.6.3",
     "prettier": "^3.8.1",
-    "release-it": "^19.2.4",
     "uglify-js": "^3.19.3"
   },
   "repository": {
@@ -43,22 +41,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "# release-it.npm.skipChecks": "Required for OIDC Trusted Publishing - bypasses npm auth checks since OIDC handles authentication automatically. See: https://github.com/release-it/release-it/issues/1244 and https://docs.npmjs.com/trusted-publishers#supported-cicd-providers",
-  "release-it": {
-    "git": {
-      "requireBranch": "main",
-      "commitMessage": "chore(package): Release ${version}",
-      "tagName": "${version}",
-      "commitArgs": "--gpg-sign",
-      "tagArgs": "--sign"
-    },
-    "github": {
-      "release": true
-    },
-    "npm": {
-      "publish": true,
-      "skipChecks": true
-    }
   }
 }

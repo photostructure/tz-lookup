@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version type (auto-detects from package.json if not specified)"
+        description: "Version bump passed to `npm version` (defaults to patch if not specified)"
         required: false
         type: choice
         options:
@@ -41,18 +41,17 @@ jobs:
     needs: [build]
     if: ${{ github.event_name == 'workflow_dispatch' }}
     permissions:
-      id-token: write # Required for OIDC
-      contents: write # Required for release-it to create tags/commits
+      id-token: write # Required for OIDC trusted publishing
+      contents: write # Required to push the version commit/tag and create the release
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 0 # Need full history for release-it
-          lfs: true
+          fetch-depth: 0 # Need full history to push the version commit and tag
 
       # setup-node with registry-url is required for OIDC trusted publishing
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
 
@@ -63,22 +62,37 @@ jobs:
           git-user-name: ${{ secrets.GIT_USER_NAME }}
           git-user-email: ${{ secrets.GIT_USER_EMAIL }}
 
-      - name: Update npm to latest
+      - name: Update npm to latest to get --provenance support
         run: |
-          echo "Current npm version:"
-          npm --version
-          echo "Updating npm to latest..."
           npm install -g npm@latest
-          echo "New npm version:"
           npm --version
-          
+
       - name: Install dependencies
         run: npm ci
 
-      # Note: Tests are run by release-it's before:init hook via npm run lint
-      # This avoids running the full test matrix (9+ OS/Node combinations) in the release workflow
-      # The lint script is sufficient for release validation since full tests already passed
-      - name: Release with release-it
-        run: npm run release -- --ci ${{ github.event.inputs.version }}
+      # The full test matrix already ran in the build job; re-run here as a
+      # final gate on the exact commit being published.
+      - name: Test
+        run: npm test
+
+      - name: Bump version and create tag
+        run: |
+          VERSION_ARG="${{ github.event.inputs.version }}"
+          if [ -z "$VERSION_ARG" ]; then
+            VERSION_ARG="patch"
+          fi
+          npm version "$VERSION_ARG" --sign-git-tag -m "chore(package): Release %s"
+          echo "NEW_VERSION=$(npm pkg get version | tr -d '\"')" >> "$GITHUB_ENV"
+
+      - name: Push changes and tags
+        run: |
+          git push origin HEAD:main
+          git push origin --tags
+
+      - name: Create GitHub Release
+        run: gh release create "${{ env.NEW_VERSION }}" --title "Release ${{ env.NEW_VERSION }}" --generate-notes
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to npm with OIDC
+        run: npm publish --provenance
