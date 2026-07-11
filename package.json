@@ -28,7 +28,7 @@
     "release": "release-it"
   },
   "devDependencies": {
-    "geo-tz": "^8.1.5",
+    "geo-tz": "^8.1.7",
     "inhabited": "^2.0.3",
     "luxon": "^3.7.2",
     "mocha": "^11.7.5",
