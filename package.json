@@ -30,8 +30,8 @@
     "geo-tz": "^8.1.7",
     "inhabited": "^2.0.3",
     "luxon": "^3.7.2",
-    "mocha": "^11.7.5",
-    "npm-check-updates": "^19.6.3",
+    "mocha": "^11.7.6",
+    "npm-check-updates": "^22.2.9",
     "prettier": "^3.8.1",
     "uglify-js": "^3.19.3"
   },
