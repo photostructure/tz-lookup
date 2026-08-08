@@ -489,7 +489,7 @@ tz_list.sort();
 function pack(root) {
   const list = [];
 
-  for (const queue = [root]; queue.length; ) {
+  for (const queue = [root]; queue.length;) {
     const node = queue.shift();
 
     node.index = list.length;

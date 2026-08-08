@@ -22,18 +22,19 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "mocha",
+    "lint": "prettier --check package.json test.js tz_template.js pack.js",
     "prettier": "prettier --write package.json test.js tz_template.js pack.js",
-    "install:pinact": "go install github.com/suzuki-shunsuke/pinact/v3/cmd/pinact@latest",
-    "update": "npm-check-updates --upgrade --install always && pinact run -u ",
-    "preflight": "npm run update && npm run prettier && npm test"
+    "install:pinact": "go install github.com/suzuki-shunsuke/pinact/v4/cmd/pinact@v4.1.0",
+    "update": "npm-check-updates --upgrade --install always && pinact run -u",
+    "preflight": "npm run update && npm run prettier && npm run lint && npm test"
   },
   "devDependencies": {
-    "geo-tz": "^8.1.7",
+    "geo-tz": "^8.1.8",
     "inhabited": "^2.0.3",
     "luxon": "^3.7.2",
     "mocha": "^11.7.6",
     "npm-check-updates": "^22.2.9",
-    "prettier": "^3.8.1",
+    "prettier": "^3.9.6",
     "uglify-js": "^3.19.3"
   },
   "repository": {
@@ -42,5 +43,16 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "files": [
+    "index.d.ts",
+    "tz.js"
+  ],
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.10.0",
+      "onFail": "error"
+    }
   }
 }

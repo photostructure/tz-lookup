@@ -153,6 +153,12 @@ on your network connection and CPU.
 
 [tbb]: https://github.com/evansiroky/timezone-boundary-builder/
 
+## Changelog
+
+See the [GitHub Releases](https://github.com/photostructure/tz-lookup/releases)
+page for release notes, which are generated automatically from the commit
+history for each version.
+
 ## License
 
 To the extent possible by law, The Dark Sky Company, LLC has [waived all
