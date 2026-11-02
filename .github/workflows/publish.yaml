@@ -97,7 +97,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install the release Node.js toolchain
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24.18.1
           package-manager-cache: false
@@ -153,7 +153,7 @@ jobs:
             sha256sum -- *.tgz > SHA256SUMS
           )
       - name: Upload the exact package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: npm-package-${{ github.ref_name }}
           path: |
@@ -176,12 +176,12 @@ jobs:
       EXPECTED_PACKAGE_VERSION: ${{ needs.validate.outputs.package_version }}
     steps:
       - name: Download the exact package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: npm-package-${{ github.ref_name }}
           path: package-artifact
       - name: Install the release Node.js toolchain
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24.18.1
           package-manager-cache: false
@@ -275,6 +275,32 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
+
+          # npm validates a staged package for 10-30 minutes before the
+          # maintainer can approve it. Create the release only once npm serves
+          # the version, so the watcher email announces an installable package.
+          # The waits total 325 minutes; GitHub stops a job at 360.
+          VERSION="${TAG#v}"
+          gh api "repos/$GITHUB_REPOSITORY/contents/package.json?ref=$GITHUB_SHA" \
+            -H "Accept: application/vnd.github.raw" > "$RUNNER_TEMP/package.json"
+          PACKAGE="$(jq -er .name "$RUNNER_TEMP/package.json")"
+          PUBLIC=false
+          for MINUTES in 10 10 15 20 30 30 30 30 30 30 30 30 30; do
+            sleep "$((MINUTES * 60))"
+            if npm view "$PACKAGE@$VERSION" version --prefer-online \
+              > /dev/null 2> "$RUNNER_TEMP/npm-view.err"; then
+              PUBLIC=true
+              break
+            fi
+            if ! grep -q E404 "$RUNNER_TEMP/npm-view.err"; then
+              cat "$RUNNER_TEMP/npm-view.err" >&2
+              exit 1
+            fi
+          done
+          if [[ "$PUBLIC" != true ]]; then
+            echo "::error::npm does not serve $PACKAGE@$VERSION. Approve the stage, then re-run this job."
+            exit 1
+          fi
 
           if [[ ! "$GITHUB_REF" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::This workflow must run at a release tag"
