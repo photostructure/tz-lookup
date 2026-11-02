@@ -9,7 +9,7 @@ workstation.
 
 ## Prepare the release
 
-1. Land all release notes and other changes on `main`.
+1. Land all changes on `main`.
 2. Wait for the ordinary `main` build to pass.
 3. Confirm that `main` has not moved to a different commit.
 
