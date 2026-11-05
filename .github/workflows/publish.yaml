@@ -268,39 +268,30 @@ jobs:
     permissions:
       contents: write # Create the immutable GitHub release.
     steps:
+      # Create the release only once npm serves the version, so the watcher
+      # email announces an installable package.
+      - name: Wait for the npm stage approval
+        uses: photostructure/changelog-release-action@2319f91de9a32bccbb3996cd674df93ba5160d1a # v0.2.0
+        with:
+          command: wait-for-npm
+          tag: ${{ github.ref_name }}
+
+      - name: Extract the release notes from CHANGELOG.md
+        id: notes
+        uses: photostructure/changelog-release-action@2319f91de9a32bccbb3996cd674df93ba5160d1a # v0.2.0
+        with:
+          command: notes
+          tag: ${{ github.ref_name }}
+
+      # Check the tag after the wait: it can move while the job waits.
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
+          NOTES: ${{ steps.notes.outputs.notes-file }}
           REF_NAME: ${{ github.ref_name }}
           TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-
-          # npm validates a staged package for 10-30 minutes before the
-          # maintainer can approve it. Create the release only once npm serves
-          # the version, so the watcher email announces an installable package.
-          # The waits total 325 minutes; GitHub stops a job at 360.
-          VERSION="${TAG#v}"
-          gh api "repos/$GITHUB_REPOSITORY/contents/package.json?ref=$GITHUB_SHA" \
-            -H "Accept: application/vnd.github.raw" > "$RUNNER_TEMP/package.json"
-          PACKAGE="$(jq -er .name "$RUNNER_TEMP/package.json")"
-          PUBLIC=false
-          for MINUTES in 10 10 15 20 30 30 30 30 30 30 30 30 30; do
-            sleep "$((MINUTES * 60))"
-            if npm view "$PACKAGE@$VERSION" version --prefer-online \
-              > /dev/null 2> "$RUNNER_TEMP/npm-view.err"; then
-              PUBLIC=true
-              break
-            fi
-            if ! grep -q E404 "$RUNNER_TEMP/npm-view.err"; then
-              cat "$RUNNER_TEMP/npm-view.err" >&2
-              exit 1
-            fi
-          done
-          if [[ "$PUBLIC" != true ]]; then
-            echo "::error::npm does not serve $PACKAGE@$VERSION. Approve the stage, then re-run this job."
-            exit 1
-          fi
 
           if [[ ! "$GITHUB_REF" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::This workflow must run at a release tag"
@@ -334,4 +325,5 @@ jobs:
           gh release create "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
             --verify-tag \
+            --notes-file "$NOTES" \
             --generate-notes

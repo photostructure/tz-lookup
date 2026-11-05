@@ -155,9 +155,8 @@ on your network connection and CPU.
 
 ## Changelog
 
-See the [GitHub Releases](https://github.com/photostructure/tz-lookup/releases)
-page for release notes, which are generated automatically from the commit
-history for each version.
+See [CHANGELOG.md](CHANGELOG.md). Each version's section also starts its
+[GitHub release](https://github.com/photostructure/tz-lookup/releases) notes.
 
 ## License
 
