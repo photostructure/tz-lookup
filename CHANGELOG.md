@@ -19,7 +19,11 @@ This module follows semver.
 Releases before 11.8.0 are described on the
 [GitHub Releases](https://github.com/photostructure/tz-lookup/releases) page.
 
-## [Unreleased (minor)]
+## [Unreleased]
+
+## [11.8.0] - 2026-11-05
 
 - 🌱 Rebuilt with [timezone-boundary-builder 2026f](https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2026f).
 - 📦 Each GitHub release now starts with that version's section of this changelog.
+
+[11.8.0]: https://github.com/photostructure/tz-lookup/releases/tag/11.8.0
